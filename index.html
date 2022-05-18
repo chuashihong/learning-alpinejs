@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Todos</title>
+</head>
+
+<body>
+    <div class="container mx-auto mt-6 max-w-sm" x-data="initData">
+
+        <div>
+            <button class="bg-green-400 bold rounded-lg p-2 mb-2" @click="addNewTask(); 
+                    console.log('Add new task button clicked');" x-text="Add task">
+                Add Task
+            </button>
+            <div x-show="isAddingTask" class="" x-cloak>
+                <label x-text="Title" for="taskName"></label>
+                <input x-ref="title" class="border p-2 w-full" type="text" placeholder="Task title"><br>
+                <input x-ref="description" class="border p-2 w-full" type="text"  placeholder="Description"><br>
+                <button class="bg-yellow-400 bold rounded-lg p-2 mt-2" 
+                    @click="confirmAddNewTask($refs.title.innerText, $refs.description.innerTexts);
+                            $refs.title.remove();
+                            $refs.description.remove();" 
+                >  
+                    Confirm
+                </button>
+                <button class="bg-red-400 bold rounded-lg p-2" @click="cancelAddTask()"
+                >
+                    Back
+                </button>
+            </div>
+        </div>
+        <span class="text-4xl">Ongoing Tasks</span>
+        <template x-for="task in tasks">
+            <div class="bg-blue-100 p-2 m-2">
+                <div>
+
+                    <div class="m-2 p-2 text-3xl bg-purple-200 pt-4" x-text="task.title"></div>
+                </div>
+
+                <div class="m-2 text-xl" x-text="task.description"></div>
+                <button class="rounded-lg underline">Finish</button>
+                <button class="rounded-lg underline float-right pr-2">remove</button>
+                <button class="rounded-lg underline float-right pr-2">edit</button>
+            </div>
+        </template>
+
+        <span class="text-4xl">Finished tasks</span>
+        <template x-for="task in finishedTasks">
+            <div class="bg-blue-50 p-2 m-2 text-gray-500">
+                <div>
+
+                    <div class="m-2 p-2 text-3xl bg-purple-100 pt-4" x-text="task.title"></div>
+                </div>
+
+                <div class="m-2 text-xl" x-text="task.description"></div>
+                <div class="text-right">
+                    <button class="rounded-lg underline pr-2">remove</button>
+                </div>
+            </div>
+        </template>
+
+
+    </div>
+</body>
+
+</html>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('initData', () => ({
+            isAddingTask: false,
+
+
+            tasks: [
+                {
+                    title: 'Do homework',
+                    description: 'Do assignment 1 and demo 0'
+                },
+                {
+                    title: 'Buy food',
+                    description: 'Buy chicken and beef'
+                },
+                {
+                    title: 'Make appointment',
+                    description: 'Make appointment on upcoming medical check'
+                },
+            ],
+
+            finishedTasks: [
+                {
+                    title: 'Finished task 1',
+                    description: '...'
+                },
+                {
+                    title: 'Finished task 2',
+                    description: '......'
+                },
+            ],
+
+
+            addNewTask() {
+                this.isAddingTask = true
+            },
+
+            cancelAddTask() {
+                this.isAddingTask = false
+            },
+
+            confirmAddNewTask(title, description) {
+                this.tasks.push({
+                    title:title, 
+                    description:description
+                })
+                this.isAddingTask = false;
+                console.log(this.tasks)
+            }
+        }))
+    })
+</script>

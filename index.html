@@ -18,35 +18,32 @@
                     console.log('Add new task button clicked');" x-text="Add task">
                 Add Task
             </button>
-            <div x-show="isAddingTask" class="" x-cloak>
+            <div x-show="isAddingTask" class="" x-cloak x-transition>
                 <label x-text="Title" for="taskName"></label>
                 <input x-ref="title" class="border p-2 w-full" type="text" placeholder="Task title"><br>
-                <input x-ref="description" class="border p-2 w-full" type="text"  placeholder="Description"><br>
-                <button class="bg-yellow-400 bold rounded-lg p-2 mt-2" 
-                    @click="confirmAddNewTask($refs.title.innerText, $refs.description.innerTexts);
-                            $refs.title.remove();
-                            $refs.description.remove();" 
-                >  
+                <input x-ref="description" class="border p-2 w-full" type="text" placeholder="Description"><br>
+                <button class="bg-yellow-400 bold rounded-lg p-2 mt-2"
+                    @click="confirmAddNewTask($refs.title, $refs.description);">
                     Confirm
                 </button>
-                <button class="bg-red-400 bold rounded-lg p-2" @click="cancelAddTask()"
-                >
+                <button class="bg-red-400 bold rounded-lg p-2" @click="cancelAddTask()">
                     Back
                 </button>
             </div>
         </div>
         <span class="text-4xl">Ongoing Tasks</span>
         <template x-for="task in tasks">
-            <div class="bg-blue-100 p-2 m-2">
+            <div class="bg-blue-100 p-2 m-2" x-ref="taskBox">
                 <div>
 
                     <div class="m-2 p-2 text-3xl bg-purple-200 pt-4" x-text="task.title"></div>
                 </div>
 
                 <div class="m-2 text-xl" x-text="task.description"></div>
-                <button class="rounded-lg underline">Finish</button>
-                <button class="rounded-lg underline float-right pr-2">remove</button>
-                <button class="rounded-lg underline float-right pr-2">edit</button>
+                <button class="rounded-lg underline" @click="markAsDone(task);">Mark as
+                    done</button>
+                <button class="rounded-lg underline float-right pr-2" @click="removeTask(task)">remove</button>
+                <button class="rounded-lg underline float-right pr-2" @click="editTask(task)">edit</button>
             </div>
         </template>
 
@@ -59,9 +56,10 @@
                 </div>
 
                 <div class="m-2 text-xl" x-text="task.description"></div>
-                <div class="text-right">
-                    <button class="rounded-lg underline pr-2">remove</button>
-                </div>
+                <button class="rounded-lg underline" @click="markAsUndone(task);">
+                    Mark as Ongoing
+                </button>
+                <button class="rounded-lg underline float-right pr-2" @click="removeFinishedTask(task)">remove</button>
             </div>
         </template>
 
@@ -79,14 +77,17 @@
 
             tasks: [
                 {
+                    // id: 0,
                     title: 'Do homework',
                     description: 'Do assignment 1 and demo 0'
                 },
                 {
+                    // id: 1,
                     title: 'Buy food',
                     description: 'Buy chicken and beef'
                 },
                 {
+                    // id: 2,
                     title: 'Make appointment',
                     description: 'Make appointment on upcoming medical check'
                 },
@@ -94,10 +95,12 @@
 
             finishedTasks: [
                 {
+                    // id: 0,
                     title: 'Finished task 1',
                     description: '...'
                 },
                 {
+                    // id: 1,
                     title: 'Finished task 2',
                     description: '......'
                 },
@@ -113,13 +116,54 @@
             },
 
             confirmAddNewTask(title, description) {
-                this.tasks.push({
-                    title:title, 
-                    description:description
-                })
-                this.isAddingTask = false;
-                console.log(this.tasks)
-            }
+                if (title.value != '' && description.value != '') {
+
+                    this.tasks.unshift({
+                        title: title.value,
+                        description: description.value
+                    })
+                    this.isAddingTask = false;
+                    title.value = '';
+                    description.value = '';
+
+                } else {
+                    alert('You must not leave Title and Description empty!');
+                }
+            },
+
+            markAsDone(task) {
+                if (confirm("Mark the task as done?")) {
+
+                    this.finishedTasks.unshift({
+                        title: task.title,
+                        description: task.description
+                    })
+                    this.tasks.splice(this.tasks.indexOf(task), 1)
+                }
+            },
+            markAsUndone(task) {
+                if (confirm("Mark the task as Undone?")) {
+
+                    this.tasks.unshift({
+                        title: task.title,
+                        description: task.description
+                    })
+                    this.finishedTasks.splice(this.finishedTasks.indexOf(task), 1)
+                }
+            },
+            removeTask(task) {
+                if (confirm("Delete this task?")) {
+                    this.tasks.splice(this.tasks.indexOf(task), 1)
+                }
+            },
+            removeFinishedTask(task) {
+                if (confirm("Delete this finished task?")) {
+                    this.finishedTasks.splice(this.finishedTasks.indexOf(task), 1)
+                }
+            },
+            editTask(task) {
+
+            },
         }))
     })
 </script>

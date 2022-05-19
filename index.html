@@ -11,60 +11,100 @@
 </head>
 
 <body>
-    <div class="container mx-auto mt-6 max-w-sm" x-data="initData">
-
-        <div>
-            <button class="bg-green-400 bold rounded-lg p-2 mb-2" @click="addNewTask(); 
-                    console.log('Add new task button clicked');" x-text="Add task">
-                Add Task
-            </button>
-            <div x-show="isAddingTask" class="" x-cloak x-transition>
-                <label x-text="Title" for="taskName"></label>
-                <input x-ref="title" class="border p-2 w-full" type="text" placeholder="Task title"><br>
-                <input x-ref="description" class="border p-2 w-full" type="text" placeholder="Description"><br>
-                <button class="bg-yellow-400 bold rounded-lg p-2 mt-2"
-                    @click="confirmAddNewTask($refs.title, $refs.description);">
-                    Confirm
+    <div class="content-start grid grid-cols-2">
+        <div class="mt-6 relative" x-data="initData">
+            <div>
+                <button class="bg-green-400 bold rounded-lg p-2 mb-2" @click="addNewTask(); 
+                console.log('Add new task button clicked');" x-text="Add task">
+                    Add Task
                 </button>
-                <button class="bg-red-400 bold rounded-lg p-2" @click="cancelAddTask()">
-                    Back
-                </button>
+                <div x-show="isAddingTask" class="" x-cloak x-transition>
+                    <label x-text="Title" for="taskName"></label>
+                    <input x-ref="title" class="border p-2 w-full" type="text" placeholder="Task title"><br>
+                    <input x-ref="description" class="border p-2 w-full" type="text" placeholder="Description"><br>
+                    <button class="bg-yellow-400 bold rounded-lg p-2 mt-2"
+                        @click="confirmAddNewTask($refs.title, $refs.description);">
+                        Confirm
+                    </button>
+                    <button class="bg-red-400 bold rounded-lg p-2" @click="cancelAddTask()">
+                        Back
+                    </button>
+                </div>
             </div>
-        </div>
-        <span class="text-4xl">Ongoing Tasks</span>
-        <template x-for="task in tasks">
-            <div class="bg-blue-100 p-2 m-2" x-ref="taskBox">
-                <div>
+            <span class="text-4xl">Ongoing Tasks</span>
+            <template x-for="task in tasks">
+                <div class="bg-blue-100 p-2 m-2" x-ref="taskBox">
+                    <div>
+                        <div class="m-2 p-2 text-3xl bg-purple-200 pt-4" x-text="task.title"></div>
+                    </div>
 
-                    <div class="m-2 p-2 text-3xl bg-purple-200 pt-4" x-text="task.title"></div>
+                    <div class="m-2 text-xl" x-text="task.description"></div>
+                    <button class="rounded-lg underline" @click="markAsDone(task);">Mark as done</button>
+                    <button class="rounded-lg underline float-right pr-2" @click="removeTask(task)">remove</button>
+                    <button class="rounded-lg underline float-right pr-2"
+                        @click="editTask(task)">edit</button>
                 </div>
 
+                <!-- <div class="bg-blue-100 p-2 m-2" x-ref="taskBox">
+            <div>
+                <input class="m-2 p-2 text-3xl bg-purple-200 pt-4" value="task.title"></input>
+            </div>
+            
                 <div class="m-2 text-xl" x-text="task.description"></div>
                 <button class="rounded-lg underline" @click="markAsDone(task);">Mark as
                     done</button>
-                <button class="rounded-lg underline float-right pr-2" @click="removeTask(task)">remove</button>
-                <button class="rounded-lg underline float-right pr-2" @click="editTask(task)">edit</button>
-            </div>
-        </template>
+                    <button class="rounded-lg underline float-right pr-2" @click="removeTask(task)">remove</button>
+                    <button class="rounded-lg underline float-right pr-2" @click="editTask(this)">edit</button>
+                </div> -->
+            </template>
 
-        <span class="text-4xl">Finished tasks</span>
-        <template x-for="task in finishedTasks">
-            <div class="bg-blue-50 p-2 m-2 text-gray-500">
-                <div>
+            <span class="text-4xl">Finished tasks</span>
+            <template x-for="task in finishedTasks">
+                <div class="bg-blue-50 p-2 m-2 text-gray-500">
+                    <div>
 
-                    <div class="m-2 p-2 text-3xl bg-purple-100 pt-4" x-text="task.title"></div>
+                        <div class="m-2 p-2 text-3xl bg-purple-100 pt-4" x-text="task.title"></div>
+                    </div>
+
+                    <div class="m-2 text-xl" x-text="task.description"></div>
+                    <button class="rounded-lg underline" @click="markAsUndone(task);">
+                        Mark as Ongoing
+                    </button>
+                    <button class="rounded-lg underline float-right pr-2"
+                        @click="removeFinishedTask(task)">remove</button>
                 </div>
+            </template>
+        </div>
+        <div class="mt-6">
+            <div class="sticky top-2">
+                <div class="text-3xl">Editing</div>
+                <div class="bg-blue-100 p-2 m-2" x-ref="taskBox">
+                    <div >
+                        <div id="taskTitle" class="m-2 p-2 text-3xl bg-purple-200 pt-4"></div>
+                    </div>
+                    <div id="taskDescription" class="m-2 text-xl"></div>
 
-                <div class="m-2 text-xl" x-text="task.description"></div>
-                <button class="rounded-lg underline" @click="markAsUndone(task);">
-                    Mark as Ongoing
-                </button>
-                <button class="rounded-lg underline float-right pr-2" @click="removeFinishedTask(task)">remove</button>
+                </div>
+                <div class="bg-gray-200 p-2 m-2" x-ref="taskBox">
+                    <div id="">
+                        <div>New Title: </div>
+                        <input id="editTaskTitle" class="m-2 p-2 text-3xl bg-yellow-200 pt-4" x-text="task.title"></input>
+                    </div>
+                    <div>
+                        <div>New Description: </div>
+                        <input id="editTaskDesc" class="m-2 p-2 text-xl bg-white pt-4"></input>
+                    </div>
+                    <button class="bg-green-400 bold rounded-lg p-2 mb-2" @click="doneEdit">
+                        Done
+                    </button>
+                    <button class="bg-red-400 bold rounded-lg p-2 mb-2" @click="cancelEdit">
+                        Cancel
+                    </button>
+                </div>
             </div>
-        </template>
-
-
+        </div>
     </div>
+
 </body>
 
 </html>
@@ -162,7 +202,15 @@
                 }
             },
             editTask(task) {
-
+                var titleView = document.getElementById("taskTitle")
+                var descView = document.getElementById("taskDescription")
+                var taskTitle = document.getElementById("editTaskTitle")
+                var taskDescription = document.getElementById("editTaskDesc")
+                console.log(titleView)
+                titleView.innerText = task.title
+                descView.innerText = task.description
+                taskTitle.value = task.title
+                taskDescription.value = task.description
             },
         }))
     })

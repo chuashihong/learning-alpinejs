@@ -11,8 +11,8 @@
 </head>
 
 <body>
-    <div class="content-start grid grid-cols-2">
-        <div class="mt-6 relative" x-data="initData">
+    <div class="content-start grid grid-cols-2" x-data="initData">
+        <div class="mt-6 relative">
             <div>
                 <button class="bg-green-400 bold rounded-lg p-2 mb-2" @click="addNewTask(); 
                 console.log('Add new task button clicked');" x-text="Add task">
@@ -76,7 +76,7 @@
             </template>
         </div>
         <div class="mt-6">
-            <div class="sticky top-2">
+            <div class="sticky top-2" x-show="isEditingTask">
                 <div class="text-3xl">Editing</div>
                 <div class="bg-blue-100 p-2 m-2" x-ref="taskBox">
                     <div >
@@ -88,18 +88,27 @@
                 <div class="bg-gray-200 p-2 m-2" x-ref="taskBox">
                     <div id="">
                         <div>New Title: </div>
-                        <input id="editTaskTitle" class="m-2 p-2 text-3xl bg-yellow-200 pt-4" x-text="task.title"></input>
+                        <input x-model="previewTitle" type="text" id="editTaskTitle" class="m-2 p-2 text-3xl bg-yellow-200 pt-4" x-text="task.title" required></input>
                     </div>
                     <div>
                         <div>New Description: </div>
-                        <input id="editTaskDesc" class="m-2 p-2 text-xl bg-white pt-4"></input>
+                        <input x-model="previewDesc" id="editTaskDesc" class="m-2 p-2 text-xl bg-white pt-4" required></input>
                     </div>
+                    
                     <button class="bg-green-400 bold rounded-lg p-2 mb-2" @click="doneEdit">
                         Done
                     </button>
                     <button class="bg-red-400 bold rounded-lg p-2 mb-2" @click="cancelEdit">
                         Cancel
                     </button>
+                </div>
+                <div class="text-3xl">Preview</div>
+                <div class="bg-blue-100 p-2 m-2" x-ref="taskBox">
+                    <div >
+                        <div x-ref="preT" x-text="previewTitle" class="m-2 p-2 text-3xl bg-purple-200 pt-4" ></div>
+                    </div>
+                    <div x-ref="preD" x-text="previewDesc" class="m-2 text-xl" ></div>
+
                 </div>
             </div>
         </div>
@@ -113,8 +122,10 @@
     document.addEventListener('alpine:init', () => {
         Alpine.data('initData', () => ({
             isAddingTask: false,
-
-
+            isEditingTask: false,
+            previewTitle: '',
+            previewDesc:'',
+            editingTask: Object,
             tasks: [
                 {
                     // id: 0,
@@ -172,6 +183,10 @@
             },
 
             markAsDone(task) {
+                if (this.editingTask === task) {
+                    alert("You should finish editing first!")
+                    return
+                }
                 if (confirm("Mark the task as done?")) {
 
                     this.finishedTasks.unshift({
@@ -206,12 +221,31 @@
                 var descView = document.getElementById("taskDescription")
                 var taskTitle = document.getElementById("editTaskTitle")
                 var taskDescription = document.getElementById("editTaskDesc")
-                console.log(titleView)
+                // console.log(titleView)
+                this.editingTask = task
                 titleView.innerText = task.title
                 descView.innerText = task.description
                 taskTitle.value = task.title
                 taskDescription.value = task.description
+                this.previewTitle = task.title
+                this.previewDesc = task.description
+                this.isEditingTask = true
             },
+            doneEdit() {
+                this.tasks[this.tasks.indexOf(this.editingTask)].title = this.previewTitle
+                this.tasks[this.tasks.indexOf(this.editingTask)].description = this.previewDesc
+                this.previewTitle = ''
+                this.previewDesc = ''
+                this.isEditingTask = false
+                this.editingTask = null
+            },
+            
+            cancelEdit() {
+                this.previewTitle = ''
+                this.previewDesc = ''
+                this.isEditingTask = false
+                this.editingTask = null
+            }
         }))
     })
 </script>

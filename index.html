@@ -11,8 +11,8 @@
 </head>
 
 <body>
-    <div class="content-start grid grid-cols-2" x-data="initData">
-        <div class="mt-6 relative">
+    <div class="content-start" x-data="initData">
+        <div class="mt-6 z-0" x-show="!isEditingTask">
             <div>
                 <button class="bg-green-400 bold rounded-lg p-2 mb-2" @click="addNewTask(); 
                 console.log('Add new task button clicked');" x-text="Add task">
@@ -75,8 +75,8 @@
                 </div>
             </template>
         </div>
-        <div class="mt-6">
-            <div class="sticky top-2" x-show="isEditingTask">
+        <div class="mt-6 pt-100px width-1/2 content-center fixed bg-opacity-40" x-if="isEditingTask" >
+            <div class="text-black/54 m-auto w-4/5">
                 <div class="text-3xl">Editing</div>
                 <div class="bg-blue-100 p-2 m-2" x-ref="taskBox">
                     <div >
@@ -86,7 +86,7 @@
 
                 </div>
                 <div class="bg-gray-200 p-2 m-2" x-ref="taskBox">
-                    <div id="">
+                    <div>
                         <div>New Title: </div>
                         <input x-model="previewTitle" type="text" id="editTaskTitle" class="m-2 p-2 text-3xl bg-yellow-200 pt-4" x-text="task.title" required></input>
                     </div>
@@ -217,6 +217,7 @@
                 }
             },
             editTask(task) {
+                console.log('1')
                 var titleView = document.getElementById("taskTitle")
                 var descView = document.getElementById("taskDescription")
                 var taskTitle = document.getElementById("editTaskTitle")

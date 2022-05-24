@@ -6,19 +6,33 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="alpinejs/alpinejs-csp/cdn.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Todos</title>
+    <title>Todo</title>
 </head>
 
 <body>
-    <div class="content-start" x-data="initData">
-        <div class="mt-6 z-0" x-show="!isEditingTask">
-            <div>
-                <button class="bg-green-400 bold rounded-lg p-2 mb-2" @click="addNewTask(); 
-                console.log('Add new task button clicked');" x-text="Add task">
-                    Add Task
-                </button>
-                <div x-show="isAddingTask" class="" x-cloak x-transition>
+
+    <!-- <input type="text" id="disabled-input"
+        class="mb-6 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        value="Disabled input" disabled="">
+    <input type="text" id="disabled-input-2"
+        class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        value="Disabled readonly input" readonly=""> -->
+
+    <div class="overflow-auto flex items-center justify-center" style="background: #edf2f7;" x-data="initData">
+        <div class="bg-white rounded shadow p-6 m-4 w-full lg:w-3/4 lg:max-w-lg">
+            <div class="mb-2">
+                <div class="flex mt-4">
+                    <input x-ref="title"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 mr-4 text-grey-darker"
+                        placeholder="Add Todo" @keyup.enter="confirmAddNewTask($el)" autofocus>
+                    <button
+                        class="flex-no-shrink p-2 border-2 rounded text-teal-500 border-teal-100 hover:text-white hover:bg-teal-500"
+                        @click="confirmAddNewTask($refs.title);">
+                        Add Task</button>
+                </div>
+                <!-- <div x-show="isAddingTask" class="" x-cloak x-transition>
                     <label x-text="Title" for="taskName"></label>
                     <input x-ref="title" class="border p-2 w-full" type="text" placeholder="Task title"><br>
                     <input x-ref="description" class="border p-2 w-full" type="text" placeholder="Description"><br>
@@ -29,11 +43,43 @@
                     <button class="bg-red-400 bold rounded-lg p-2" @click="cancelAddTask()">
                         Back
                     </button>
-                </div>
+                </div> -->
             </div>
-            <span class="text-4xl">Ongoing Tasks</span>
+            <h1 x-show="isAllEmpty">You don't have any todo yet! Add a new Todo to get started!</h1>
             <template x-for="task in tasks">
-                <div class="bg-blue-100 p-2 m-2" x-ref="taskBox">
+                <div class="mb-4">
+                    <div x-show="!isEditingTask(task)">
+                        <div class="flex items-center bg-gray-100 p-3">
+                            <p x-text="task.title" class="w-full text-grey-darkest">
+
+                            </p>
+                            <button
+                                class="flex-no-shrink p-2 ml-4 mr-2 border-2 rounded hover:text-black text-yellow-600 border-yellow-400 hover:bg-yellow-400"
+                                @click="editTask(task, $el.parentNode)">Edit</button>
+                            <button
+                                class="flex-no-shrink p-2 ml-4 mr-2 border-2 rounded hover:text-white text-green-600 border-green-600 hover:bg-green-600"
+                                @click="markAsDone(task)">
+                                Done</button>
+                            <button
+                                class="flex-no-shrink p-2 ml-2 border-2 rounded text-red-600 border-red-600 hover:text-white hover:bg-red-600"
+                                @click="removeTask(task)">
+                                Remove</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center bg-gray-100 p-3" x-show="isEditingTask(task)">
+                        <input x-model="previewTitle" type="text" class="bg-yellow-200 w-full" x-text="task.title" required
+                            x-if="isEditingTask(task)" @keyup.enter="saveEdit(task)" @keyup.escape="cancelEdit(task)"></input>
+                        <button
+                            class="flex-no-shrink p-2 ml-4 mr-2 border-2 rounded hover:text-white text-green-600 border-green-600 hover:bg-green-600"
+                            @click="saveEdit(task)">
+                            Save</button>
+                        <button
+                            class="flex-no-shrink p-2 ml-2 border-2 rounded text-red-600 border-red-600 hover:text-white hover:bg-red-600"
+                            @click="cancelEdit(task)">
+                            Cancel</button>
+                    </div>
+                </div>
+                <!-- <div class="bg-blue-100 p-2 m-2" x-ref="taskBox">
                     <div>
                         <div class="m-2 p-2 text-3xl bg-purple-200 pt-4" x-text="task.title"></div>
                     </div>
@@ -41,9 +87,8 @@
                     <div class="m-2 text-xl" x-text="task.description"></div>
                     <button class="rounded-lg underline" @click="markAsDone(task);">Mark as done</button>
                     <button class="rounded-lg underline float-right pr-2" @click="removeTask(task)">remove</button>
-                    <button class="rounded-lg underline float-right pr-2"
-                        @click="editTask(task)">edit</button>
-                </div>
+                    <button class="rounded-lg underline float-right pr-2" @click="editTask(task)">edit</button>
+                </div> -->
 
                 <!-- <div class="bg-blue-100 p-2 m-2" x-ref="taskBox">
             <div>
@@ -57,44 +102,44 @@
                     <button class="rounded-lg underline float-right pr-2" @click="editTask(this)">edit</button>
                 </div> -->
             </template>
-
-            <span class="text-4xl">Finished tasks</span>
+            <div class="pt-4"></div>
             <template x-for="task in finishedTasks">
-                <div class="bg-blue-50 p-2 m-2 text-gray-500">
-                    <div>
 
-                        <div class="m-2 p-2 text-3xl bg-purple-100 pt-4" x-text="task.title"></div>
-                    </div>
-
-                    <div class="m-2 text-xl" x-text="task.description"></div>
-                    <button class="rounded-lg underline" @click="markAsUndone(task);">
-                        Mark as Ongoing
-                    </button>
-                    <button class="rounded-lg underline float-right pr-2"
-                        @click="removeFinishedTask(task)">remove</button>
+                <div class="flex mb-4 items-center">
+                    <p x-text="task.title" class="w-full text-grey-darkest line-through text-gray-400">
+                    </p>
+                    <button
+                        class="flex-no-shrink p-2 ml-4 mr-2 border-2 rounded hover:text-white text-gray-500 border-gray-500 hover:bg-gray-500"
+                        @click="markAsUndone(task);">Not Done</button>
+                    <button
+                        class="flex-no-shrink p-2 ml-2 border-2 rounded text-red-600 border-red-600 hover:text-white hover:bg-red-600"
+                        @click="removeFinishedTask(task);">Remove</button>
                 </div>
+
             </template>
         </div>
-        <div class="mt-6 pt-100px width-1/2 content-center fixed bg-opacity-40" x-if="isEditingTask" >
-            <div class="text-black/54 m-auto w-4/5">
+        <!-- <div class="mt-6">
+            <div class="sticky top-2" x-show="isEditingTask">
                 <div class="text-3xl">Editing</div>
                 <div class="bg-blue-100 p-2 m-2" x-ref="taskBox">
-                    <div >
+                    <div>
                         <div id="taskTitle" class="m-2 p-2 text-3xl bg-purple-200 pt-4"></div>
                     </div>
                     <div id="taskDescription" class="m-2 text-xl"></div>
 
                 </div>
                 <div class="bg-gray-200 p-2 m-2" x-ref="taskBox">
-                    <div>
+                    <div id="">
                         <div>New Title: </div>
-                        <input x-model="previewTitle" type="text" id="editTaskTitle" class="m-2 p-2 text-3xl bg-yellow-200 pt-4" x-text="task.title" required></input>
+                        <input x-model="previewTitle" type="text" id="editTaskTitle"
+                            class="m-2 p-2 text-3xl bg-yellow-200 pt-4" x-text="task.title" required></input>
                     </div>
                     <div>
                         <div>New Description: </div>
-                        <input x-model="previewDesc" id="editTaskDesc" class="m-2 p-2 text-xl bg-white pt-4" required></input>
+                        <input x-model="previewDesc" id="editTaskDesc" class="m-2 p-2 text-xl bg-white pt-4"
+                            required></input>
                     </div>
-                    
+
                     <button class="bg-green-400 bold rounded-lg p-2 mb-2" @click="doneEdit">
                         Done
                     </button>
@@ -104,14 +149,14 @@
                 </div>
                 <div class="text-3xl">Preview</div>
                 <div class="bg-blue-100 p-2 m-2" x-ref="taskBox">
-                    <div >
-                        <div x-ref="preT" x-text="previewTitle" class="m-2 p-2 text-3xl bg-purple-200 pt-4" ></div>
+                    <div>
+                        <div x-ref="preT" x-text="previewTitle" class="m-2 p-2 text-3xl bg-purple-200 pt-4"></div>
                     </div>
-                    <div x-ref="preD" x-text="previewDesc" class="m-2 text-xl" ></div>
+                    <div x-ref="preD" x-text="previewDesc" class="m-2 text-xl"></div>
 
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 
 </body>
@@ -124,12 +169,17 @@
             isAddingTask: false,
             isEditingTask: false,
             previewTitle: '',
-            previewDesc:'',
+            previewDesc: '',
             editingTask: Object,
+
+            isAllEmpty() {
+                return this.tasks.length == 0
+            },
+
             tasks: [
                 {
                     // id: 0,
-                    title: 'Do homework',
+                    title: 'Add another component to Tailwind Components',
                     description: 'Do assignment 1 and demo 0'
                 },
                 {
@@ -166,19 +216,16 @@
                 this.isAddingTask = false
             },
 
-            confirmAddNewTask(title, description) {
-                if (title.value != '' && description.value != '') {
+            confirmAddNewTask(title) {
+                if (title.value != '') {
 
                     this.tasks.unshift({
                         title: title.value,
-                        description: description.value
+                        description: '' //not needed
                     })
                     this.isAddingTask = false;
                     title.value = '';
-                    description.value = '';
-
-                } else {
-                    alert('You must not leave Title and Description empty!');
+                    // description.value = '';
                 }
             },
 
@@ -187,64 +234,62 @@
                     alert("You should finish editing first!")
                     return
                 }
-                if (confirm("Mark the task as done?")) {
-
-                    this.finishedTasks.unshift({
-                        title: task.title,
-                        description: task.description
-                    })
-                    this.tasks.splice(this.tasks.indexOf(task), 1)
-                }
+                this.finishedTasks.unshift({
+                    title: task.title,
+                    description: task.description
+                })
+                this.tasks.splice(this.tasks.indexOf(task), 1)
             },
             markAsUndone(task) {
-                if (confirm("Mark the task as Undone?")) {
-
-                    this.tasks.unshift({
-                        title: task.title,
-                        description: task.description
-                    })
-                    this.finishedTasks.splice(this.finishedTasks.indexOf(task), 1)
-                }
+                this.tasks.unshift({
+                    title: task.title,
+                    description: task.description
+                })
+                this.finishedTasks.splice(this.finishedTasks.indexOf(task), 1)
             },
             removeTask(task) {
-                if (confirm("Delete this task?")) {
-                    this.tasks.splice(this.tasks.indexOf(task), 1)
-                }
+                this.tasks.splice(this.tasks.indexOf(task), 1)
             },
             removeFinishedTask(task) {
-                if (confirm("Delete this finished task?")) {
-                    this.finishedTasks.splice(this.finishedTasks.indexOf(task), 1)
-                }
-            },
-            editTask(task) {
-                console.log('1')
-                var titleView = document.getElementById("taskTitle")
-                var descView = document.getElementById("taskDescription")
-                var taskTitle = document.getElementById("editTaskTitle")
-                var taskDescription = document.getElementById("editTaskDesc")
-                // console.log(titleView)
-                this.editingTask = task
-                titleView.innerText = task.title
-                descView.innerText = task.description
-                taskTitle.value = task.title
-                taskDescription.value = task.description
-                this.previewTitle = task.title
-                this.previewDesc = task.description
-                this.isEditingTask = true
-            },
-            doneEdit() {
-                this.tasks[this.tasks.indexOf(this.editingTask)].title = this.previewTitle
-                this.tasks[this.tasks.indexOf(this.editingTask)].description = this.previewDesc
-                this.previewTitle = ''
-                this.previewDesc = ''
-                this.isEditingTask = false
-                this.editingTask = null
+                this.finishedTasks.splice(this.finishedTasks.indexOf(task), 1)
             },
             
-            cancelEdit() {
-                this.previewTitle = ''
-                this.previewDesc = ''
-                this.isEditingTask = false
+            isEditingTask(task) {
+                if (this.editingTask === task) {
+                    // console.log("return true")
+                    return true
+                } 
+                // console.log("return false")
+                return false
+            },
+
+            editTask(task, container) {
+                // var titleView = document.getElementById("taskTitle")
+                // var descView = document.getElementById("taskDescription")
+                // var taskTitle = document.getElementById("editTaskTitle")
+                // var taskDescription = document.getElementById("editTaskDesc")
+                // // console.log(titleView)
+                this.editingTask = task
+                // titleView.innerText = task.title
+                // descView.innerText = task.description
+                // taskTitle.value = task.title
+                // taskDescription.value = task.description
+                this.previewTitle = task.title
+                // this.previewDesc = task.description
+                // this.isEditingTask = true
+
+
+            },
+            saveEdit(task) {
+                if (this.previewTitle == '') {
+                    alert("Content cannot be empty!")
+                    return
+                }
+                this.tasks[this.tasks.indexOf(this.editingTask)].title = this.previewTitle
+                this.editingTask = null
+            },
+
+            cancelEdit(task) {
                 this.editingTask = null
             }
         }))
